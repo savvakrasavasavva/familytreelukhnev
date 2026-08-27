@@ -431,6 +431,7 @@ const I18N={
        '1946-1980':'1946–1980','1981-':'с 1981','none':'без года'},
   status:{'':'все','alive':'живущие','dead':'умершие','unknown':'неизвестно'},
   born:'Родился(ась)', died:'Умер(ла)', route:'Путь', contacts:'Связь', stories:'Истории',
+  wayOn:'путь на карте',
   pFrom:y=>`с ${y}`, pUntil:y=>`по ${y}`, pNow:'сейчас',
   copy:'Скопировать ссылку', copied:'Ссылка скопирована', expand:'развернуть',
   exp:'Раскрыть всё', col:'Свернуть',
@@ -487,6 +488,7 @@ const I18N={
        '1946-1980':'1946–1980','1981-':'from 1981','none':'no year'},
   status:{'':'all','alive':'living','dead':'deceased','unknown':'unknown'},
   born:'Born', died:'Died', route:'Route', contacts:'Get in touch', stories:'Stories',
+  wayOn:'route on the map',
   pFrom:y=>`from ${y}`, pUntil:y=>`until ${y}`, pNow:'present',
   copy:'Copy link', copied:'Link copied', expand:'expand',
   exp:'Expand all', col:'Collapse',
@@ -1087,7 +1089,16 @@ function show(id,btn){
     (p.rt?'<dt>'+tr('route')+'</dt><dd><div class="rt">'+p.rt.map(s=>
       '<b>'+esc(trPeriod(s.y,s.u)||'—')+'</b><i>'+esc(L(s,'p'))+
       (s.t&&s.t!=='жительство'?' <em>'+esc(trEvt(s.t))+'</em>':'')+'</i>').join('')+
-      '</div></dd>':'')+
+      '</div>'+
+      // Путь словами уже есть, а линии не было: до 27.08.2026 из карточки
+      // нельзя было попасть на карту вообще, и человек, прочитавший
+      // «Стамбул · Марсель · Копенгаген», шёл искать это на глобусе сам.
+      // Ссылка появляется только когда карта собрана — по тому же признаку,
+      // по которому в шапке есть чип «Карта».
+      (document.getElementById('maplink')
+        ?'<a class="allpix" href="map.html#p='+encodeURIComponent(id)+
+         '" target="_blank" rel="noopener">'+tr('wayOn')+' →</a>':'')+
+      '</dd>':'')+
     (p.sr&&p.sr.length?'<dt>'+tr('stories')+'</dt><dd>'+p.sr.map((s,n)=>
       '<div class="sto"><a class="h" href="stories.html#'+esc(s.i)+'" target="_blank" rel="noopener">'+
       esc(L(s,'t'))+'</a>'+
